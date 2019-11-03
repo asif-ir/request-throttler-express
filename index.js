@@ -20,7 +20,7 @@ const registerUser = (client, ip, minutesWindow) => {
  */
 const throttleUser = res => {
     res.status(429);
-    return res.json({ message: "Rate limit exceeded, slow down." });
+    res.json({ message: "Rate limit exceeded, slow down." });
 };
 
 /*
@@ -30,10 +30,12 @@ const handleRevisit = (result, maxHits, res, ip, minutesWindow) => {
     const data = JSON.parse(result);
     if (data.hits >= maxHits) {
         // Sub case - where the visited user has exceeded their limits
-        return throttleUser(res);
+        throttleUser(res);
+        return false;
     }
     ++data.hits;
     client.set(ip, JSON.stringify(data), 'EX', minutesWindow * 60);
+    return true;
 };
 
 /*
@@ -54,8 +56,8 @@ const requestThrottler = ({ minutesWindow, maxHits }) => {
             if (result) {
                 // Case - where user has already visited in the current time window
                 client.get(ip, (err, result) => {
-                    handleRevisit(result, maxHits, res, ip, minutesWindow);
-                    next();
+                    const success = handleRevisit(result, maxHits, res, ip, minutesWindow);
+                    if (success) next();
                 });
             } else {
                 // Case - a new user has made the request
