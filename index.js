@@ -5,9 +5,16 @@ const moment = require('moment');
 const client = redis.createClient();
 
 /*
+    Default implementation of getting IP address out of user request
+ */
+const _ipGetter = req => {
+    return req.ip;
+};
+
+/*
     Set the user IP as key in cache for reference
  */
-const registerUser = (client, ip, minutesWindow) => {
+const _registerUser = (client, ip, minutesWindow) => {
     let entry = {
         hits: 1,
         firstHit: moment().unix(),
@@ -18,7 +25,7 @@ const registerUser = (client, ip, minutesWindow) => {
 /*
     Send a 429 status response for too many requests
  */
-const throttleUser = res => {
+const _throttleUser = res => {
     res.status(429);
     res.json({ message: "Rate limit exceeded, slow down." });
 };
@@ -26,11 +33,11 @@ const throttleUser = res => {
 /*
     Handle request by a user who already requested in the last window
  */
-const handleRevisit = (result, maxHits, res, ip, minutesWindow) => {
+const _handleRevisit = (result, maxHits, res, ip, minutesWindow) => {
     const data = JSON.parse(result);
     if (data.hits >= maxHits) {
         // Sub case - where the visited user has exceeded their limits
-        throttleUser(res);
+        _throttleUser(res);
         return false;
     }
     ++data.hits;
@@ -41,12 +48,13 @@ const handleRevisit = (result, maxHits, res, ip, minutesWindow) => {
 /*
     Middleware for throttling requests
  */
-const requestThrottler = ({ minutesWindow, maxHits }) => {
+const requestThrottler = ({ minutesWindow, maxHits, ipGetter }) => {
     minutesWindow = minutesWindow || 1;
     maxHits = maxHits || 5;
+    ipGetter = ipGetter || _ipGetter;
 
     return (req, res, next) => {
-        const ip = req.ip;
+        const ip = ipGetter(req);
 
         client.exists(ip, (err, result) => {
             if (err) {
@@ -56,12 +64,12 @@ const requestThrottler = ({ minutesWindow, maxHits }) => {
             if (result) {
                 // Case - where user has already visited in the current time window
                 client.get(ip, (err, result) => {
-                    const success = handleRevisit(result, maxHits, res, ip, minutesWindow);
+                    const success = _handleRevisit(result, maxHits, res, ip, minutesWindow);
                     if (success) next();
                 });
             } else {
                 // Case - a new user has made the request
-                registerUser(client, ip, minutesWindow);
+                _registerUser(client, ip, minutesWindow);
                 next();
             }
         });
