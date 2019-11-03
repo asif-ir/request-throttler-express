@@ -7,5 +7,6 @@ describe('request-throttler ::unit', function () {
 
     it('should return another function as the middleware', function () {
         expect(requestThrottler({})).toBeInstanceOf(Function);
+        expect(requestThrottler()).toBeInstanceOf(Function);
     });
 });

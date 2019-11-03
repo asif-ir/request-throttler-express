@@ -15,7 +15,7 @@ const _ipGetter = req => {
     Set the user IP as key in cache for reference
  */
 const _registerUser = (client, ip, minutesWindow) => {
-    let entry = {
+    const entry = {
         hits: 1,
         firstHit: moment().unix(),
     };
@@ -48,10 +48,13 @@ const _handleRevisit = (result, maxHits, res, ip, minutesWindow) => {
 /*
     Middleware for throttling requests
  */
-const requestThrottler = ({ minutesWindow, maxHits, ipGetter }) => {
-    minutesWindow = minutesWindow || 1;
-    maxHits = maxHits || 5;
-    ipGetter = ipGetter || _ipGetter;
+const requestThrottler = options => {
+    if (!options) options = {};
+    let { minutesWindow, maxHits, ipGetter } = options;
+
+    minutesWindow = minutesWindow || 1; // Size of the window in minutes
+    maxHits = maxHits || 10; // Hit limit for a user in a time window
+    ipGetter = ipGetter || _ipGetter; // A function to retrieve the user IP from the request object
 
     return (req, res, next) => {
         const ip = ipGetter(req);
