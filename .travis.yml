@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - 'stable'
+cache: npm
+install:
+  - npm start
+jobs:
+  include:
+    - stage: Run Tests
+      script:
+        - npm run test
+    - stage: Release
+      deploy:
+        provider: npm
+        email: '$NPM_EMAIL'
+        api_key: '$NPM_TOKEN'
+        skip_cleanup: true
+        on:
+          tags: true
+branches:
+  only:
+    - master
+    - /^v[0-9]+.*$/

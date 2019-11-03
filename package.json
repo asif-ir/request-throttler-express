@@ -1,0 +1,32 @@
+{
+  "name": "request-throttler-express",
+  "version": "0.0.1",
+  "description": "A simple request rate throttler for node and express applications.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm install",
+    "test": "jest ./tests/unit/"
+  },
+  "repository": "https://github.com/asif-ir/request-throttler-express",
+  "keywords": [
+    "request",
+    "rate limit",
+    "throttle",
+    "express",
+    "429",
+    "ip",
+    "redis"
+  ],
+  "author": "Asif Iqbal",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.24.0",
+    "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "axios": "^0.19.0",
+    "express": "^4.17.1",
+    "jest": "^24.9.0",
+    "redis-mock": "^0.46.0"
+  }
+}
