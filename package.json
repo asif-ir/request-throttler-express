@@ -18,7 +18,7 @@
     "redis"
   ],
   "author": "Asif Iqbal",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "moment": "^2.24.0",
     "redis": "^2.8.0"
