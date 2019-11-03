@@ -31,13 +31,13 @@ to the middleware below.
 ## Options
 The middleware function accepts a variety of optional parameters.
 
-- #### minutesWindow
+- ### minutesWindow
     The size of the time window in minutes. Default value is _1_.
     
-- #### maxHits
+- ### maxHits
     The maximum number of requests that can be made from any particular IP in a given window. Default value is _10_.
 
-- #### ipGetter
+- ### ipGetter
     This parameter accepts a function with the request object as the argument. It expects the user to return the ip 
     address as a string. The default implementation retrieves the standard express _req.ip_.
     
