@@ -41,13 +41,17 @@ The middleware function accepts a variety of optional parameters.
     This parameter accepts a function with the request object as the argument. It expects the user to return the ip 
     address as a string. The default implementation retrieves the standard express _req.ip_.
     
+- ### limitExceededHandler
+    This parameter accepts a function with the request object as the argument. The user can do logging and similar 
+    things based on their requirements here. By default it's a no-op.
+        
 ## Example Usage
 The options can be used in any combination like following:
 
 ``` javascript
     app.use(requestThrottler({
         minutesWindow: 5,
-        allowedLimit: 20,
+        maxHits: 20,
     }));
 ```
 

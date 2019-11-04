@@ -4,6 +4,8 @@ const moment = require('moment');
 // Redis client
 const client = redis.createClient();
 
+const noOp = () => {};
+
 /*
     Default implementation of getting IP address out of user request
  */
@@ -50,11 +52,12 @@ const _handleRevisit = (result, maxHits, res, ip, minutesWindow) => {
  */
 const requestThrottler = options => {
     if (!options) options = {};
-    let { minutesWindow, maxHits, ipGetter } = options;
+    let { minutesWindow, maxHits, ipGetter, limitExceededHandler } = options;
 
     minutesWindow = minutesWindow || 1; // Size of the window in minutes
     maxHits = maxHits || 10; // Hit limit for a user in a time window
-    ipGetter = ipGetter || _ipGetter; // A function to retrieve the user IP from the request object
+    ipGetter = ipGetter || _ipGetter; // Function to retrieve the user IP from the request object
+    limitExceededHandler = limitExceededHandler || noOp; // Function to execute if limits were exceeded
 
     return (req, res, next) => {
         const ip = ipGetter(req);
@@ -69,6 +72,7 @@ const requestThrottler = options => {
                 client.get(ip, (err, result) => {
                     const success = _handleRevisit(result, maxHits, res, ip, minutesWindow);
                     if (success) next();
+                    else limitExceededHandler(req);
                 });
             } else {
                 // Case - a new user has made the request
