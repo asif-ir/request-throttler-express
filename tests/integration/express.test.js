@@ -1,27 +1,21 @@
-const express = require('express');
-const app = express();
-const requestThrottler = require('../../');
 const axios = require('axios');
-
-const PORT = 9300;
+const redis = require('redis');
+const PORT = 3000;
 const API_URL = `http://localhost:${PORT}`;
 const maxHits = 3;
-const minutesWindow = 1;
-let server;
+
+const client = redis.createClient();
 
 describe('Should block after rate limit exceeds ::integration', () => {
-    beforeAll(() => {
-        app.use(requestThrottler({ minutesWindow, maxHits }));
-        app.get('/', (req, res) => {
-            res.status(200);
-            res.json({ status: 'UP' });
-        });
-        server = app.listen(PORT);
-    });
-
-    afterAll(async (done) => {
-        server.close(() => {
-            done();
+    beforeEach(async (done) => {
+        const localIp = '::ffff:127.0.0.1';
+        client.del([localIp], (err) => {
+            if (!err) {
+                client.keys('*', (err, res) => {
+                    console.log('keys', res);
+                });
+                done();
+            }
         });
     });
 
@@ -29,11 +23,11 @@ describe('Should block after rate limit exceeds ::integration', () => {
         for (let i = maxHits; i > 0; --i) {
             await axios.get(API_URL);
         }
-        const goodCall = await axios.get(API_URL);
-        const badCall = await axios.get(API_URL);
-        expect(goodCall.status).toBe(200);
-        // expect(badCall.status).toBe(429); // TODO: Fix test
-    }, minutesWindow * 60 * 1000);
+
+        axios.get(API_URL).then().catch(err => {
+            expect(err.response.status).toBe(429);
+        });
+    });
 });
 
 
