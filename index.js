@@ -115,8 +115,8 @@ const redisMiddleware = options => {
  */
 const memcachedMiddleware = options => {
   throw {
-    name : 'NotImplementedError',
-    message : 'This feature is under development',
+    name: 'NotImplementedError',
+    message: 'This feature is under development',
   };
 };
 
@@ -124,8 +124,8 @@ const memcachedMiddleware = options => {
     Entry point for middleware access, more caching stores can be added
  */
 const requestThrottler = {
-    redis: redisMiddleware,
-    memcached: memcachedMiddleware,
+  redis: redisMiddleware,
+  memcached: memcachedMiddleware,
 };
 
 module.exports = requestThrottler;
