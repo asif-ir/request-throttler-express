@@ -22,7 +22,7 @@ Request throttler can be used just as any other standard express.js middleware.
     const requestThrottler = require('request-throttler-express');
     
     // Register as a middleware
-    app.use(requestThrottler());
+    app.use(requestThrottler.redis());
 ```
 
 By default, it will limit to 10 requests per minute. To take more control, check out the possible options you can pass
@@ -53,7 +53,7 @@ The middleware function accepts a variety of optional parameters.
 The options can be used in any combination like following:
 
 ``` javascript
-    app.use(requestThrottler({
+    app.use(requestThrottler.redis({
         minutesWindow: 5,
         maxHits: 20,
     }));
