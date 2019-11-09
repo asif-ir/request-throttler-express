@@ -3,7 +3,7 @@ class CacheClient {
     this.client = client;
   }
 
-  getValue (key, cb) {
+  getValue(key, cb) {
     this.client.getValue(key, cb);
   }
 
