@@ -28,6 +28,20 @@ Request throttler can be used just as any other standard express.js middleware.
 By default, it will limit to 10 requests per minute. To take more control, check out the possible options you can pass
 to the middleware below.
 
+For a general case though, you might want to pass some connection details to your redis server. The above middleware
+also accepts an optional object where you can pass connection details within a connection property as under:
+  
+``` javascript
+    app.use(requestThrottler.redis({
+        connection: {
+            host: 'localhost',
+            port: 6379,
+        }
+    }));
+```
+For more knowledge on what can be passed in the connection property, please go through the redis 
+documentation [here](https://www.npmjs.com/package/redis).
+
 ## Options
 The middleware function accepts a variety of optional parameters.
 
