@@ -4,11 +4,12 @@ node_js:
 cache: npm
 install:
   - npm start
+script: echo "Running tests against $(node -v)..."
 jobs:
   include:
     - stage: Run Tests
       script:
-        - npm run test
+        - npm run coverage
     - stage: Release
       deploy:
         provider: npm
