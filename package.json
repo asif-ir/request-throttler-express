@@ -12,7 +12,11 @@
   "keywords": [
     "request",
     "rate limit",
+    "rate limit exceeded",
+    "rate limiter",
+    "rate limiting",
     "throttle",
+    "throttler",
     "express",
     "429",
     "ip",
