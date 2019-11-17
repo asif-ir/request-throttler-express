@@ -1,27 +1,27 @@
-const moment = require('moment');
-const CacheClient = require('./cache-client');
-const RedisClient = require('./redis-client');
+import moment from 'moment';
+import CacheClient from './cache-client';
+import RedisClient from './redis-client';
 
-const noOp = () => {};
+export const noOp = () => {};
 
 /*
     Default implementation of getting IP address out of user request
  */
-const _ipGetter = req => {
+export const _ipGetter = req => {
   return req.ip;
 };
 
 /*
     Default implementation of handling client connection error
  */
-const _errorHandler = err => {
+export const _errorHandler = err => {
   console.error(err);
 };
 
 /*
     Set the user IP as key in cache for reference
  */
-const _registerUser = (client, ip, minutesWindow) => {
+export const _registerUser = (client, ip, minutesWindow) => {
   const entry = {
     hits: 1,
     firstHit: moment().unix(),
@@ -32,7 +32,7 @@ const _registerUser = (client, ip, minutesWindow) => {
 /*
     Send a 429 status response for too many requests
  */
-const _throttleUser = res => {
+export const _throttleUser = res => {
   res.status(429);
   res.json({ message: 'Rate limit exceeded, slow down.' });
 };
@@ -40,7 +40,14 @@ const _throttleUser = res => {
 /*
     Handle request by a user who already requested in the last window
  */
-const _handleRevisit = (result, client, maxHits, res, ip, minutesWindow) => {
+export const _handleRevisit = (
+  result,
+  client,
+  maxHits,
+  res,
+  ip,
+  minutesWindow,
+) => {
   const data = JSON.parse(result);
   if (data.hits >= maxHits) {
     // Sub case - where the visited user has exceeded their limits
@@ -55,7 +62,7 @@ const _handleRevisit = (result, client, maxHits, res, ip, minutesWindow) => {
 /*
   Main logic for middleware
  */
-const _middleWareLogic = (options, client) => {
+export const _middleWareLogic = (options, client) => {
   let {
     minutesWindow,
     maxHits,
@@ -103,7 +110,7 @@ const _middleWareLogic = (options, client) => {
 /*
   Middleware implementation with redis
  */
-const redisMiddleware = options => {
+export const redisMiddleware = options => {
   options = options || {};
   const { connection } = options;
   const redisClient = new RedisClient(connection);
@@ -113,7 +120,7 @@ const redisMiddleware = options => {
 /*
   Middleware implementation with memcached
  */
-const memcachedMiddleware = options => {
+export const memcachedMiddleware = options => {
   throw {
     name: 'NotImplementedError',
     message: 'This feature is under development',
@@ -128,4 +135,4 @@ const requestThrottler = {
   memcached: memcachedMiddleware,
 };
 
-module.exports = requestThrottler;
+export default requestThrottler;

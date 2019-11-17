@@ -1,4 +1,4 @@
-const requestThrottler = require('../../');
+import requestThrottler from '../../';
 
 describe('request-throttler ::unit', function() {
   it('should return a proper function', function() {

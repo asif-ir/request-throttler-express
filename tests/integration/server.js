@@ -1,7 +1,9 @@
-const express = require('express');
-const requestThrottler = require('../../index');
+import express from 'express';
+import requestThrottler from '../../index';
+
 const port = 12000;
 const app = express();
+
 app.use(requestThrottler.redis({
   minutesWindow: 0.1,
   maxHits: 3,
