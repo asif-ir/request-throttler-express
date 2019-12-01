@@ -12,4 +12,4 @@ class CacheClient {
   }
 }
 
-export default CacheClient;
+module.exports = CacheClient;

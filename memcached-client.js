@@ -6,4 +6,4 @@ class MemcachedClient {
   setKey(key, value, expirationSeconds, cb) {}
 }
 
-export default MemcachedClient;
+module.exports = MemcachedClient;
