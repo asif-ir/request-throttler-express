@@ -1,5 +1,5 @@
-import express from 'express';
-import requestThrottler from '../../index';
+const express = require('express');
+const requestThrottler = require('../../index');
 
 const port = 12000;
 const app = express();

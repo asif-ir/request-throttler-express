@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+const axios = require('axios');
 const PORT = 12000;
 const API_URL = `http://localhost:${PORT}`;
 const maxHits = 3;

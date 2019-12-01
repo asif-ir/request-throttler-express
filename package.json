@@ -1,6 +1,6 @@
 {
   "name": "request-throttler-express",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple request rate throttler for node and express applications.",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "moment": "^2.24.0",
+    "nodemon": "^2.0.1",
     "redis": "^2.8.0"
   },
   "devDependencies": {
