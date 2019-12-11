@@ -40,14 +40,7 @@ const _throttleUser = res => {
 /*
     Handle request by a user who already requested in the last window
  */
-const _handleRevisit = (
-  result,
-  client,
-  maxHits,
-  res,
-  ip,
-  minutesWindow,
-) => {
+const _handleRevisit = (result, client, maxHits, res, ip, minutesWindow) => {
   const data = JSON.parse(result);
   if (data.hits >= maxHits) {
     // Sub case - where the visited user has exceeded their limits
