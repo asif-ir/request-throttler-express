@@ -1,6 +1,6 @@
 {
   "name": "request-throttler-express",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A simple request rate throttler for node and express applications.",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,10 @@
     "coverage": "jest ./tests/unit/ --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
   "files": [
-    "*.js"
+    "index.js",
+    "cache-client.js",
+    "memcached-client.js",
+    "redis-client.js"
   ],
   "repository": "https://github.com/asif-ir/request-throttler-express",
   "keywords": [
@@ -29,7 +32,6 @@
   "license": "MIT",
   "dependencies": {
     "moment": "^2.24.0",
-    "nodemon": "^2.0.1",
     "redis": "^2.8.0"
   },
   "devDependencies": {
