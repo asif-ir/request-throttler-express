@@ -1,6 +1,6 @@
 {
   "name": "request-throttler-express",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A simple request rate throttler for node and express applications.",
   "main": "index.js",
   "scripts": {
