@@ -45,8 +45,8 @@ documentation [here](https://www.npmjs.com/package/redis).
 ## Options
 The middleware function accepts a variety of optional parameters.
 
--  **minutesWindow** \
-    The size of the time window in minutes. Default value is _1_.
+-  **ttl** \
+    The size of the time window in seconds(time to live). Default value is _60_.
     
 -  **maxHits** \
     The maximum number of requests that can be made from any particular IP in a given window. Default value is _10_.

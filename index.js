@@ -21,12 +21,12 @@ const _errorHandler = err => {
 /*
     Set the user IP as key in cache for reference
  */
-const _registerUser = (client, ip, minutesWindow) => {
+const _registerUser = (client, ip, ttl) => {
   const entry = {
     hits: 1,
     firstHit: moment().unix(),
   };
-  client.setKey(ip, JSON.stringify(entry), minutesWindow * 60);
+  client.setKey(ip, JSON.stringify(entry), ttl);
 };
 
 /*
@@ -40,7 +40,7 @@ const _throttleUser = res => {
 /*
     Handle request by a user who already requested in the last window
  */
-const _handleRevisit = (result, client, maxHits, res, ip, minutesWindow) => {
+const _handleRevisit = (result, client, maxHits, res, ip, ttl) => {
   const data = JSON.parse(result);
   if (data.hits >= maxHits) {
     // Sub case - where the visited user has exceeded their limits
@@ -48,7 +48,7 @@ const _handleRevisit = (result, client, maxHits, res, ip, minutesWindow) => {
     return false;
   }
   ++data.hits;
-  client.setKey(ip, JSON.stringify(data), minutesWindow * 60);
+  client.setKey(ip, JSON.stringify(data), ttl);
   return true;
 };
 
@@ -57,14 +57,14 @@ const _handleRevisit = (result, client, maxHits, res, ip, minutesWindow) => {
  */
 const _middleWareLogic = (options, client) => {
   let {
-    minutesWindow,
+    ttl,
     maxHits,
     ipGetter,
     throttleHandler,
     errorHandler,
   } = options;
 
-  minutesWindow = minutesWindow || 1; // Size of the window in minutes
+  ttl = ttl || 60; // Size of the window in seconds (time to live)
   maxHits = maxHits || 10; // Hit limit for a user in a time window
   ipGetter = ipGetter || _ipGetter; // Function to retrieve the user IP from the request object
   throttleHandler = throttleHandler || noOp; // Function to execute if limits were exceeded
@@ -86,14 +86,14 @@ const _middleWareLogic = (options, client) => {
             maxHits,
             res,
             ip,
-            minutesWindow,
+            ttl,
           );
           if (success) next();
           else throttleHandler(req);
         });
       } else {
         // Case - a new user has made the request
-        _registerUser(client, ip, minutesWindow);
+        _registerUser(client, ip, ttl);
         next();
       }
     });
