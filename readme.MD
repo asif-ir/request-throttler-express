@@ -68,9 +68,11 @@ The options can be used in any combination like following:
 
 ``` javascript
     app.use(requestThrottler.redis({
-        minutesWindow: 5,
+        ttl: 600,
         maxHits: 20,
     }));
 ```
 
+## License
+This library is freely distributable under the terms of the [MIT license](https://github.com/asif-ir/request-throttler-express/blob/master/LICENSE). (MIT)
 

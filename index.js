@@ -2,26 +2,30 @@ const moment = require('moment');
 const CacheClient = require('./cache-client');
 const RedisClient = require('./redis-client');
 
-const noOp = () => {};
+/*
+  Private methods
+ */
+const _ = {};
+_.noOp = () => {};
 
 /*
     Default implementation of getting IP address out of user request
  */
-const _ipGetter = req => {
+_.ipGetter = req => {
   return req.ip;
 };
 
 /*
     Default implementation of handling client connection error
  */
-const _errorHandler = err => {
+_.errorHandler = err => {
   console.error(err);
 };
 
 /*
     Set the user IP as key in cache for reference
  */
-const _registerUser = (client, ip, ttl) => {
+_.registerUser = (client, ip, ttl) => {
   const entry = {
     hits: 1,
     firstHit: moment().unix(),
@@ -32,7 +36,7 @@ const _registerUser = (client, ip, ttl) => {
 /*
     Send a 429 status response for too many requests
  */
-const _throttleUser = res => {
+_.throttleUser = res => {
   res.status(429);
   res.json({ message: 'Rate limit exceeded, slow down.' });
 };
@@ -40,11 +44,11 @@ const _throttleUser = res => {
 /*
     Handle request by a user who already requested in the last window
  */
-const _handleRevisit = (result, client, maxHits, res, ip, ttl) => {
+_.handleRevisit = (result, client, maxHits, res, ip, ttl) => {
   const data = JSON.parse(result);
   if (data.hits >= maxHits) {
     // Sub case - where the visited user has exceeded their limits
-    _throttleUser(res);
+    _.throttleUser(res);
     return false;
   }
   ++data.hits;
@@ -55,20 +59,14 @@ const _handleRevisit = (result, client, maxHits, res, ip, ttl) => {
 /*
   Main logic for middleware
  */
-const _middleWareLogic = (options, client) => {
-  let {
-    ttl,
-    maxHits,
-    ipGetter,
-    throttleHandler,
-    errorHandler,
-  } = options;
+_.middleWareLogic = (options, client) => {
+  let { ttl, maxHits, ipGetter, throttleHandler, errorHandler } = options;
 
   ttl = ttl || 60; // Size of the window in seconds (time to live)
   maxHits = maxHits || 10; // Hit limit for a user in a time window
-  ipGetter = ipGetter || _ipGetter; // Function to retrieve the user IP from the request object
-  throttleHandler = throttleHandler || noOp; // Function to execute if limits were exceeded
-  errorHandler = errorHandler || _errorHandler; // Function to execute if limits were exceeded
+  ipGetter = ipGetter || _.ipGetter; // Function to retrieve the user IP from the request object
+  throttleHandler = throttleHandler || _.noOp; // Function to execute if limits were exceeded
+  errorHandler = errorHandler || _.errorHandler; // Function to execute if limits were exceeded
 
   const cacheClient = new CacheClient(client);
 
@@ -80,7 +78,7 @@ const _middleWareLogic = (options, client) => {
       if (result) {
         // Case - where user has already visited in the current time window
         client.getValue(ip, (err, result) => {
-          const success = _handleRevisit(
+          const success = _.handleRevisit(
             result,
             client,
             maxHits,
@@ -93,7 +91,7 @@ const _middleWareLogic = (options, client) => {
         });
       } else {
         // Case - a new user has made the request
-        _registerUser(client, ip, ttl);
+        _.registerUser(client, ip, ttl);
         next();
       }
     });
@@ -103,17 +101,17 @@ const _middleWareLogic = (options, client) => {
 /*
   Middleware implementation with redis
  */
-const redisMiddleware = options => {
+_.redisMiddleware = options => {
   options = options || {};
   const { connection } = options;
   const redisClient = new RedisClient(connection);
-  return _middleWareLogic(options, redisClient);
+  return _.middleWareLogic(options, redisClient);
 };
 
 /*
   Middleware implementation with memcached
  */
-const memcachedMiddleware = options => {
+_.memcachedMiddleware = options => {
   throw {
     name: 'NotImplementedError',
     message: 'This feature is under development',
@@ -124,8 +122,9 @@ const memcachedMiddleware = options => {
     Entry point for middleware access, more caching stores can be added
  */
 const requestThrottler = {
-  redis: redisMiddleware,
-  memcached: memcachedMiddleware,
+  redis: _.redisMiddleware,
+  memcached: _.memcachedMiddleware,
 };
 
 module.exports = requestThrottler;
+module.exports.privates = _;
