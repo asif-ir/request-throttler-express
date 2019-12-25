@@ -37,6 +37,22 @@ describe('request-throttler ::unit', () => {
     });
   });
 
+  describe('throttleUserBySending429', () => {
+    const mockResponse = () => {
+      const res = {};
+      res.status = jest.fn().mockReturnValue(200);
+      res.json = jest.fn().mockReturnValue({ message: 'Dummy Message' });
+      return res;
+    };
+
+    it('should return 429 status', () => {
+      const res = mockResponse();
+      throttleUser(res);
+      expect(res.status).toHaveBeenCalledWith(429);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Rate limit exceeded, slow down.' });
+    })
+  })
+
   describe('throttleUser', () => {
     const originalConsoleErr = console.error;
     let consoleErrData = [];
