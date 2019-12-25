@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm install",
     "test": "jest ./tests/unit/",
+    "integration": "jest ./tests/integration/",
     "coverage": "jest ./tests/unit/ --coverage",
     "coveralls": "jest ./tests/unit/ --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
