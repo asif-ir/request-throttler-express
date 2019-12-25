@@ -5,7 +5,7 @@ const port = 12000;
 const app = express();
 
 app.use(requestThrottler.redis({
-  minutesWindow: 0.1,
+  ttl: 6,
   maxHits: 3,
   connection: {
     host: 'localhost',
