@@ -30,14 +30,7 @@ describe('request-throttler ::unit', () => {
     });
   });
 
-  describe('errorHandler', () => {
-    it('should return undefined', () => {
-      const retVal = errorHandler({});
-      expect(retVal).toBe(retVal);
-    });
-  });
-
-  describe('throttleUserBySending429', () => {
+  describe('throttleUser response', () => {
     const mockResponse = () => {
       const res = {};
       res.status = jest.fn().mockReturnValue(200);
@@ -51,7 +44,7 @@ describe('request-throttler ::unit', () => {
       expect(res.status).toHaveBeenCalledWith(429);
       expect(res.json).toHaveBeenCalledWith({ message: 'Rate limit exceeded, slow down.' });
     })
-  })
+  });
 
   describe('throttleUser', () => {
     const originalConsoleErr = console.error;
